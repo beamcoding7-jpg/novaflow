@@ -418,6 +418,103 @@
         </div>
       </div>
     </section>
+
+    <!-- Interactive ROI & Savings Simulator -->
+    <section class="section" id="calculator" aria-labelledby="calculator-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Interactive Simulator</span>
+          <h2 class="section-title" id="calculator-heading">Quantify Your Operational Alpha</h2>
+          <p class="section-desc">
+            Calculate tangible bottom-line impact. See how much your finance and treasury team saves by eliminating manual reconciliation, failed wire triage, and human error leakage.
+          </p>
+        </div>
+
+        <div class="calculator-card">
+          <!-- Controls Column -->
+          <div class="calc-controls">
+            <!-- Monthly Volume Slider -->
+            <div class="calc-control">
+              <div class="calc-control__header">
+                <label for="calc-slider-volume" class="calc-control__label">Monthly Transaction Volume</label>
+                <span class="calc-control__val tabular-nums" id="calc-val-volume">$1,500,000</span>
+              </div>
+              <input
+                type="range"
+                id="calc-slider-volume"
+                class="calc-slider"
+                min="50000"
+                max="10000000"
+                step="50000"
+                value="1500000"
+                aria-label="Monthly Transaction Volume"
+                aria-valuemin="50000"
+                aria-valuemax="10000000"
+                aria-valuenow="1500000"
+              >
+              <div class="calc-slider-bounds">
+                <span>$50K</span>
+                <span>$10M</span>
+              </div>
+            </div>
+
+            <!-- Manual Processing Hours Slider -->
+            <div class="calc-control">
+              <div class="calc-control__header">
+                <label for="calc-slider-hours" class="calc-control__label">Manual Processing Hours</label>
+                <span class="calc-control__val tabular-nums" id="calc-val-hours">80 hrs/mo</span>
+              </div>
+              <input
+                type="range"
+                id="calc-slider-hours"
+                class="calc-slider"
+                min="10"
+                max="200"
+                step="5"
+                value="80"
+                aria-label="Manual Processing Hours per Month"
+                aria-valuemin="10"
+                aria-valuemax="200"
+                aria-valuenow="80"
+              >
+              <div class="calc-slider-bounds">
+                <span>10 hrs</span>
+                <span>200 hrs</span>
+              </div>
+            </div>
+
+            <div class="calc-footnote">
+              * Savings based on $65/hr average finance FTE rate, 85% manual task automation, and 75% reduction in 0.3% baseline wire/ledger error leakage.
+            </div>
+          </div>
+
+          <!-- Results Box Column -->
+          <div class="calc-results" aria-live="polite">
+            <div class="calc-results__primary">
+              <div class="calc-results__label">Projected Annual Savings</div>
+              <div class="calc-results__headline tabular-nums" id="calc-annual-savings">$56,415</div>
+            </div>
+
+            <div class="calc-metrics-row">
+              <div class="calc-metric-box">
+                <div class="calc-results__label">Hours Saved Monthly</div>
+                <div class="calc-metric-box__val tabular-nums" id="calc-hours-saved">68 hrs/mo</div>
+              </div>
+              <div class="calc-metric-box">
+                <div class="calc-results__label">Estimated Payback</div>
+                <div class="calc-metric-box__val tabular-nums" id="calc-payback-days">23 days</div>
+              </div>
+            </div>
+
+            <div class="calc-results__action">
+              <a href="#demo" class="btn btn-primary w-full" data-action="open-demo">
+                Schedule Custom ROI Assessment
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <div id="app"></div>
