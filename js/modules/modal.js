@@ -39,10 +39,10 @@ export function showToast(message, type = 'success') {
     ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`
     : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
 
-  toast.innerHTML = `
-    ${iconSvg}
-    <span>${message}</span>
-  `;
+  toast.innerHTML = iconSvg;
+  const textSpan = document.createElement('span');
+  textSpan.textContent = message;
+  toast.appendChild(textSpan);
 
   container.appendChild(toast);
 
@@ -120,7 +120,7 @@ export function initModal() {
 
   const modalOverlay = document.getElementById('demo-modal');
   const openButtons = document.querySelectorAll('[data-action="open-demo-modal"], [data-action="open-demo"], [data-modal-open]');
-  const closeButton = document.querySelector('[data-action="close-modal"]');
+  const closeButtons = document.querySelectorAll('[data-action="close-modal"]');
   const form = document.getElementById('demo-form');
 
   // ป้องกันการผูก Event Listener ซ้ำซ้อน (Idempotent)
@@ -132,10 +132,10 @@ export function initModal() {
     btn.addEventListener('click', openModal);
   });
 
-  // ผูกปุ่มปิด Modal
-  if (closeButton) {
-    closeButton.addEventListener('click', closeModal);
-  }
+  // ผูกปุ่มปิด Modal ทุกปุ่ม (Multiple Close Buttons)
+  closeButtons.forEach((btn) => {
+    btn.addEventListener('click', closeModal);
+  });
 
   // ปิดเมื่อคลิกที่ Overlay พื้นหลังภายนอกคอนเทนเนอร์
   if (modalOverlay) {
@@ -166,6 +166,13 @@ export function initModal() {
 
       const first = focusableElements[0];
       const last = focusableElements[focusableElements.length - 1];
+
+      // Focus Containment Fallback: หาก activeElement หลุดออกนอก modalOverlay ให้ดึงกลับมาที่ first element
+      if (typeof modalOverlay.contains === 'function' && !modalOverlay.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+        return;
+      }
 
       if (e.shiftKey && document.activeElement === first) {
         e.preventDefault();

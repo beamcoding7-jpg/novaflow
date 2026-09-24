@@ -148,12 +148,20 @@ test('Task 10: Modal opens, closes, traps focus, and restores focus', async () =
     reset() { formResetCalled = true; }
   };
 
+  const secondCloseBtn = {
+    listeners: {},
+    focusCalled: false,
+    focus() { this.focusCalled = true; },
+    addEventListener(event, fn) { this.listeners[event] = fn; }
+  };
+
   const mockOverlay = {
     classList: {
       add: (c) => overlayClasses.add(c),
       remove: (c) => overlayClasses.delete(c),
       contains: (c) => overlayClasses.has(c)
     },
+    contains: (node) => focusable.includes(node) || node === secondCloseBtn,
     setAttribute: (k, v) => { overlayAttrs[k] = String(v); },
     getAttribute: (k) => overlayAttrs[k],
     addEventListener: (event, fn) => { overlayListeners[event] = fn; },
@@ -189,6 +197,7 @@ test('Task 10: Modal opens, closes, traps focus, and restores focus', async () =
     },
     querySelectorAll: (sel) => {
       if (sel.includes('open-demo-modal') || sel.includes('open-demo')) return [openBtn];
+      if (sel.includes('close-modal')) return [closeBtn, secondCloseBtn];
       return [];
     },
     addEventListener: (event, fn) => { docListeners[event] = fn; }
@@ -215,6 +224,18 @@ test('Task 10: Modal opens, closes, traps focus, and restores focus', async () =
     // 2. Focus Trap on Tab
     const keydownHandler = docListeners['keydown'];
     assert.ok(keydownHandler, 'keydown handler must be registered');
+
+    // Focus Containment Fallback: when activeElement is outside modalOverlay
+    globalThis.document.activeElement = outsideButton;
+    closeBtn.focusCalled = false;
+    let fallbackPrevented = false;
+    keydownHandler({
+      key: 'Tab',
+      shiftKey: false,
+      preventDefault: () => { fallbackPrevented = true; }
+    });
+    assert.equal(fallbackPrevented, true, 'Tab when focus is outside modal must prevent default');
+    assert.equal(closeBtn.focusCalled, true, 'Tab when focus is outside modal must return focus to first focusable element');
 
     // Shift+Tab on first element wraps to last
     globalThis.document.activeElement = closeBtn; // first element
@@ -259,9 +280,15 @@ test('Task 10: Modal opens, closes, traps focus, and restores focus', async () =
     overlayListeners['click']({ target: {} }); // clicked inside
     assert.equal(state.get('isModalOpen'), true, 'Clicking inside modal should NOT close modal');
 
-    // Close button click closes modal
+    // 6. Close button 1 click closes modal
     closeBtn.listeners['click']();
-    assert.equal(state.get('isModalOpen'), false, 'Clicking close button should close modal');
+    assert.equal(state.get('isModalOpen'), false, 'Clicking close button 1 should close modal');
+
+    // 7. Multiple close buttons: Close button 2 click also closes modal
+    openModal();
+    assert.equal(state.get('isModalOpen'), true);
+    secondCloseBtn.listeners['click']();
+    assert.equal(state.get('isModalOpen'), false, 'Clicking close button 2 should also close modal');
 
   } finally {
     globalThis.document = originalDoc;
@@ -357,3 +384,53 @@ test('Task 10: Form submission resets form, closes modal, and triggers toast', a
     globalThis.document = originalDoc;
   }
 });
+
+test('Task 10: showToast sanitizes message via textContent (XSS defense)', async () => {
+  const { showToast } = await import('../js/modules/modal.js');
+
+  const originalDoc = globalThis.document;
+  const toastAppended = [];
+  const mockToastContainer = {
+    appendChild: (child) => toastAppended.push(child)
+  };
+
+  const createdElements = [];
+  globalThis.document = {
+    body: { appendChild: () => {} },
+    getElementById: (id) => (id === 'toast-container' ? mockToastContainer : null),
+    createElement: (tag) => {
+      const el = {
+        tagName: tag.toUpperCase(),
+        children: [],
+        className: '',
+        style: {},
+        innerHTML: '',
+        textContent: '',
+        appendChild: (child) => el.children.push(child),
+        remove: () => {}
+      };
+      createdElements.push(el);
+      return el;
+    }
+  };
+
+  try {
+    const maliciousPayload = '<img src=x onerror="alert(1)"> & <script>alert("hack")</script>';
+    showToast(maliciousPayload, 'success');
+
+    assert.equal(toastAppended.length, 1);
+    const toast = toastAppended[0];
+
+    // Verify innerHTML only contains SVG and does not contain the unescaped script tag
+    assert.ok(!toast.innerHTML.includes('<script>'), 'toast innerHTML must not contain unescaped script tag');
+    assert.ok(!toast.innerHTML.includes('onerror'), 'toast innerHTML must not contain unescaped onerror handler');
+
+    // Verify textContent of the appended span child holds the raw payload safely
+    const spanChild = toast.children.find((c) => c.tagName === 'SPAN');
+    assert.ok(spanChild, 'Toast must append a text span element');
+    assert.equal(spanChild.textContent, maliciousPayload, 'Span textContent must be set directly to the message');
+  } finally {
+    globalThis.document = originalDoc;
+  }
+});
+
