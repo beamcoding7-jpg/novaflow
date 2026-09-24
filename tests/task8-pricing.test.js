@@ -14,7 +14,7 @@ test('pricingTiers contains correct monthly and annual discounted rates', () => 
   assert.equal(pricingTiers.enterprise.annual, 'Custom');
 });
 
-test('Task 8: CSS defines pricing table, billing switcher, and testimonials styles', () => {
+test('Task 8: CSS defines pricing table, billing switcher, helper text, and testimonials styles', () => {
   const css = fs.readFileSync('css/modules/pricing.css', 'utf-8');
 
   // Switcher styles
@@ -28,7 +28,7 @@ test('Task 8: CSS defines pricing table, billing switcher, and testimonials styl
   assert.ok(css.includes('pulse-subtle'), 'CSS must define pulse animation for save badge');
   assert.ok(css.includes('prefers-reduced-motion'), 'CSS must respect prefers-reduced-motion');
 
-  // Pricing Cards
+  // Pricing Cards & Subtext
   assert.ok(css.includes('.pricing-grid'), 'CSS must define .pricing-grid');
   assert.ok(css.includes('.pricing-card'), 'CSS must define .pricing-card');
   assert.ok(css.includes('.pricing-card--popular'), 'CSS must define .pricing-card--popular');
@@ -37,6 +37,7 @@ test('Task 8: CSS defines pricing table, billing switcher, and testimonials styl
   assert.ok(css.includes('.pricing-card__price-row'), 'CSS must define .pricing-card__price-row');
   assert.ok(css.includes('.pricing-card__amount'), 'CSS must define .pricing-card__amount');
   assert.ok(css.includes('.pricing-card__period'), 'CSS must define .pricing-card__period');
+  assert.ok(css.includes('.pricing-card__subtext'), 'CSS must define .pricing-card__subtext');
   assert.ok(css.includes('.pricing-features'), 'CSS must define .pricing-features');
   assert.ok(css.includes('.pricing-feature-item'), 'CSS must define .pricing-feature-item');
 
@@ -64,6 +65,11 @@ test('Task 8: index.html contains Pricing and Testimonials sections with require
   assert.ok(html.includes('id="price-scale"'), 'index.html must include #price-scale');
   assert.ok(html.includes('id="price-enterprise"'), 'index.html must include #price-enterprise');
 
+  // Helper context text for billing
+  assert.ok(html.includes('id="subtext-starter"'), 'index.html must include #subtext-starter');
+  assert.ok(html.includes('id="subtext-scale"'), 'index.html must include #subtext-scale');
+  assert.ok(html.includes('id="subtext-enterprise"'), 'index.html must include #subtext-enterprise');
+
   // Tiers and pricing details
   assert.ok(html.includes('$99'), 'index.html must show initial starter price $99');
   assert.ok(html.includes('$299'), 'index.html must show initial scale price $299');
@@ -84,12 +90,18 @@ test('Task 8: index.html contains Pricing and Testimonials sections with require
   assert.ok(html.includes('Chief Financial Officer') || html.includes('CFO'), 'Testimonials must feature CFO');
   assert.ok(html.includes('Treasury') || html.includes('Finance'), 'Testimonials must feature Treasury/Finance leadership');
 
-  // Accessibility checks
+  // Accessibility checks: aria-pressed and role="switch"
   assert.ok(html.includes('role="switch"'), 'Toggle button must have role="switch"');
   assert.ok(html.includes('aria-checked'), 'Toggle button must have aria-checked');
+  assert.ok(html.includes('id="label-monthly" aria-pressed="true"') || html.includes('aria-pressed="true" id="label-monthly"'), 'Monthly label button must have aria-pressed="true"');
+  assert.ok(html.includes('id="label-annual" aria-pressed="false"') || html.includes('aria-pressed="false" id="label-annual"'), 'Annual label button must have aria-pressed="false"');
+
+  // Screen reader semantics for ratings
+  assert.ok(html.includes('role="img" aria-label="5 out of 5 stars"'), 'Testimonial rating must declare role="img"');
+  assert.ok(html.includes('<span aria-hidden="true">★★★★★</span>'), 'Star glyphs must be wrapped in aria-hidden="true"');
 });
 
-test('Task 8: js/modules/pricing.js initPricing handles switcher toggle, state sync, and DOM updates', () => {
+test('Task 8: js/modules/pricing.js initPricing handles switcher toggle, state sync, aria-pressed, and DOM updates', () => {
   _resetPricingInit();
 
   // Test graceful handling of missing DOM
@@ -149,10 +161,17 @@ test('Task 8: js/modules/pricing.js initPricing handles switcher toggle, state s
   mockToggle.setAttribute('aria-checked', 'false');
 
   const mockLabelMonthly = createMockElement('label-monthly');
+  mockLabelMonthly.setAttribute('aria-pressed', 'true');
   const mockLabelAnnual = createMockElement('label-annual');
+  mockLabelAnnual.setAttribute('aria-pressed', 'false');
+
   const mockStarterPrice = createMockElement('price-starter', '$99');
   const mockScalePrice = createMockElement('price-scale', '$299');
   const mockEnterprisePrice = createMockElement('price-enterprise', 'Custom');
+
+  const mockStarterSubtext = createMockElement('subtext-starter', 'Billed monthly');
+  const mockScaleSubtext = createMockElement('subtext-scale', 'Billed monthly');
+  const mockEnterpriseSubtext = createMockElement('subtext-enterprise', 'Annual contract');
 
   const elements = {
     'pricing-toggle': mockToggle,
@@ -160,7 +179,10 @@ test('Task 8: js/modules/pricing.js initPricing handles switcher toggle, state s
     'label-annual': mockLabelAnnual,
     'price-starter': mockStarterPrice,
     'price-scale': mockScalePrice,
-    'price-enterprise': mockEnterprisePrice
+    'price-enterprise': mockEnterprisePrice,
+    'subtext-starter': mockStarterSubtext,
+    'subtext-scale': mockScaleSubtext,
+    'subtext-enterprise': mockEnterpriseSubtext
   };
 
   globalThis.document = {
@@ -182,7 +204,11 @@ test('Task 8: js/modules/pricing.js initPricing handles switcher toggle, state s
   assert.equal(mockToggle.classList.contains('active'), false);
   assert.equal(mockToggle.getAttribute('aria-checked'), 'false');
   assert.equal(mockLabelMonthly.classList.contains('active'), true);
+  assert.equal(mockLabelMonthly.getAttribute('aria-pressed'), 'true');
   assert.equal(mockLabelAnnual.classList.contains('active'), false);
+  assert.equal(mockLabelAnnual.getAttribute('aria-pressed'), 'false');
+  assert.equal(mockStarterSubtext.textContent, 'Billed monthly');
+  assert.equal(mockScaleSubtext.textContent, 'Billed monthly');
 
   // Click toggle to switch to annual
   listeners.toggle['click']();
@@ -192,7 +218,11 @@ test('Task 8: js/modules/pricing.js initPricing handles switcher toggle, state s
   assert.equal(mockToggle.classList.contains('active'), true);
   assert.equal(mockToggle.getAttribute('aria-checked'), 'true');
   assert.equal(mockLabelMonthly.classList.contains('active'), false);
+  assert.equal(mockLabelMonthly.getAttribute('aria-pressed'), 'false');
   assert.equal(mockLabelAnnual.classList.contains('active'), true);
+  assert.equal(mockLabelAnnual.getAttribute('aria-pressed'), 'true');
+  assert.ok(mockStarterSubtext.textContent.includes('948'));
+  assert.ok(mockScaleSubtext.textContent.includes('2,868'));
 
   // Check eventBus received event
   assert.ok(emittedEvents.some(e => e.period === 'annual'));
@@ -204,12 +234,24 @@ test('Task 8: js/modules/pricing.js initPricing handles switcher toggle, state s
   assert.equal(mockScalePrice.textContent, '$299');
   assert.equal(mockToggle.classList.contains('active'), false);
   assert.equal(mockToggle.getAttribute('aria-checked'), 'false');
+  assert.equal(mockLabelMonthly.getAttribute('aria-pressed'), 'true');
+  assert.equal(mockLabelAnnual.getAttribute('aria-pressed'), 'false');
 
   // Click label-annual to switch to annual
   listeners.annual['click']();
   assert.equal(state.get('billingPeriod'), 'annual');
   assert.equal(mockStarterPrice.textContent, '$79');
   assert.equal(mockScalePrice.textContent, '$239');
+  assert.equal(mockLabelMonthly.getAttribute('aria-pressed'), 'false');
+  assert.equal(mockLabelAnnual.getAttribute('aria-pressed'), 'true');
+
+  // Test bi-directional state sync: external state update triggers UI update
+  state.set('billingPeriod', 'monthly');
+  assert.equal(mockStarterPrice.textContent, '$99');
+  assert.equal(mockScalePrice.textContent, '$299');
+  assert.equal(mockToggle.getAttribute('aria-checked'), 'false');
+  assert.equal(mockLabelMonthly.getAttribute('aria-pressed'), 'true');
+  assert.equal(mockLabelAnnual.getAttribute('aria-pressed'), 'false');
 
   // Restore global document
   globalThis.document = originalDoc;

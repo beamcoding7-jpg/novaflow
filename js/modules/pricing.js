@@ -37,6 +37,9 @@ export function initPricing() {
   const starterPriceEl = document.getElementById('price-starter');
   const scalePriceEl = document.getElementById('price-scale');
   const enterprisePriceEl = document.getElementById('price-enterprise');
+  const starterSubtextEl = document.getElementById('subtext-starter');
+  const scaleSubtextEl = document.getElementById('subtext-scale');
+  const enterpriseSubtextEl = document.getElementById('subtext-enterprise');
 
   // ตรวจสอบความปลอดภัยกรณีไม่มี element ใน DOM
   if (!toggleBtn && !starterPriceEl && !scalePriceEl) {
@@ -63,11 +66,18 @@ export function initPricing() {
       }
     }
 
-    if (labelMonthly && labelMonthly.classList) {
-      labelMonthly.classList.toggle('active', !isAnnual);
+    if (labelMonthly) {
+      if (labelMonthly.classList) labelMonthly.classList.toggle('active', !isAnnual);
+      if (typeof labelMonthly.setAttribute === 'function') {
+        labelMonthly.setAttribute('aria-pressed', String(!isAnnual));
+      }
     }
-    if (labelAnnual && labelAnnual.classList) {
-      labelAnnual.classList.toggle('active', isAnnual);
+
+    if (labelAnnual) {
+      if (labelAnnual.classList) labelAnnual.classList.toggle('active', isAnnual);
+      if (typeof labelAnnual.setAttribute === 'function') {
+        labelAnnual.setAttribute('aria-pressed', String(isAnnual));
+      }
     }
 
     if (starterPriceEl) {
@@ -82,8 +92,26 @@ export function initPricing() {
         : `$${pricingTiers.enterprise[period]}`;
     }
 
+    // อัปเดตคำอธิบายเพิ่มเติมสำหรับรอบบิล (Helper Text)
+    if (starterSubtextEl) {
+      starterSubtextEl.textContent = isAnnual ? 'Billed annually ($948/yr)' : 'Billed monthly';
+    }
+    if (scaleSubtextEl) {
+      scaleSubtextEl.textContent = isAnnual ? 'Billed annually ($2,868/yr)' : 'Billed monthly';
+    }
+    if (enterpriseSubtextEl) {
+      enterpriseSubtextEl.textContent = isAnnual ? 'Billed annually or multi-year contract' : 'Custom billing terms';
+    }
+
     eventBus.emit('pricing-changed', { period });
   }
+
+  // Bi-directional State Sync: ติดตามการเปลี่ยนแปลงภายนอกของ billingPeriod
+  state.subscribe('billingPeriod', (newPeriod) => {
+    if (newPeriod && newPeriod !== currentPeriod) {
+      updatePricing(newPeriod);
+    }
+  });
 
   if (toggleBtn && typeof toggleBtn.addEventListener === 'function') {
     toggleBtn.addEventListener('click', () => {

@@ -531,7 +531,7 @@
 
         <!-- Billing Switcher -->
         <div class="pricing-switch-wrapper">
-          <button type="button" class="pricing-switch-label active" id="label-monthly">
+          <button type="button" class="pricing-switch-label active" id="label-monthly" aria-pressed="true">
             Monthly Billing
           </button>
           <button
@@ -544,7 +544,7 @@
           >
             <span class="switch-toggle__handle" aria-hidden="true"></span>
           </button>
-          <button type="button" class="pricing-switch-label" id="label-annual">
+          <button type="button" class="pricing-switch-label" id="label-annual" aria-pressed="false">
             Annual Billing
           </button>
           <span class="pricing-save-badge">Save 20%</span>
@@ -562,6 +562,7 @@
                   <span class="pricing-card__amount tabular-nums" id="price-starter">$99</span>
                   <span class="pricing-card__period">/month</span>
                 </div>
+                <div class="pricing-card__subtext" id="subtext-starter">Billed monthly</div>
               </div>
               <div class="pricing-card__action">
                 <a href="#demo" class="btn btn-secondary w-full" data-action="open-demo">Start 14-Day Free Trial</a>
@@ -604,6 +605,7 @@
                   <span class="pricing-card__amount tabular-nums" id="price-scale">$299</span>
                   <span class="pricing-card__period">/month</span>
                 </div>
+                <div class="pricing-card__subtext" id="subtext-scale">Billed monthly</div>
               </div>
               <div class="pricing-card__action">
                 <a href="#demo" class="btn btn-primary w-full" data-action="open-demo">Start 14-Day Free Trial</a>
@@ -645,6 +647,7 @@
                   <span class="pricing-card__amount" id="price-enterprise">Custom</span>
                   <span class="pricing-card__period">tailored terms</span>
                 </div>
+                <div class="pricing-card__subtext" id="subtext-enterprise">Billed annually or multi-year contract</div>
               </div>
               <div class="pricing-card__action">
                 <a href="#demo" class="btn btn-secondary w-full" data-action="open-demo">Talk to Enterprise Treasury</a>
@@ -693,8 +696,8 @@
         <div class="testimonials-grid">
           <!-- Testimonial 1 -->
           <div class="testimonial-card">
-            <div class="testimonial-rating" aria-label="5 out of 5 stars">
-              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            <div class="testimonial-rating" role="img" aria-label="5 out of 5 stars">
+              <span aria-hidden="true">★★★★★</span>
             </div>
             <blockquote class="testimonial-quote">
               &ldquo;NovaFlow collapsed our month-end reconciliation cycle from 9 business days down to under 4 hours. The automated multi-currency ledger matching across 14 European bank accounts was entirely seamless.&rdquo;
@@ -710,8 +713,8 @@
 
           <!-- Testimonial 2 -->
           <div class="testimonial-card">
-            <div class="testimonial-rating" aria-label="5 out of 5 stars">
-              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            <div class="testimonial-rating" role="img" aria-label="5 out of 5 stars">
+              <span aria-hidden="true">★★★★★</span>
             </div>
             <blockquote class="testimonial-quote">
               &ldquo;The sub-85ms routing latency and direct SEPA and ACH clearing rails allowed us to eliminate $180,000 in annual intermediary wire surcharges. It is the gold standard for high-throughput treasury.&rdquo;
@@ -727,8 +730,8 @@
 
           <!-- Testimonial 3 -->
           <div class="testimonial-card">
-            <div class="testimonial-rating" aria-label="5 out of 5 stars">
-              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            <div class="testimonial-rating" role="img" aria-label="5 out of 5 stars">
+              <span aria-hidden="true">★★★★★</span>
             </div>
             <blockquote class="testimonial-quote">
               &ldquo;Migrating to NovaFlow&rsquo;s unified payout API unlocked instant multi-currency vendor disbursements across 38 jurisdictions with zero reconciliation discrepancies. An indispensable platform.&rdquo;
