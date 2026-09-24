@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { calculateRoi, initCalculator, _resetCalculatorInit } from '../js/modules/calculator.js';
+import { calculateRoi, calculateSavings, initCalculator, _resetCalculatorInit } from '../js/modules/calculator.js';
 import { state } from '../js/core/state.js';
 import { eventBus } from '../js/core/event-bus.js';
 
@@ -17,7 +17,13 @@ test('calculateRoi correctly computes annual savings and hours saved', () => {
   assert.equal(result.paybackDays, 23);
 });
 
-test('calculateRoi handles boundary values and enforces min payback days', () => {
+test('calculateSavings alias is exported and behaves identically to calculateRoi', () => {
+  const roi = calculateRoi({ volume: 1500000, manualHours: 80 });
+  const savings = calculateSavings({ volume: 1500000, hours: 80 });
+  assert.deepEqual(savings, roi, 'calculateSavings alias must return identical result to calculateRoi');
+});
+
+test('calculateRoi handles boundary values, enforces min payback days, and guards against division by zero', () => {
   // Test low volume and low hours
   const lowResult = calculateRoi({ volume: 50000, manualHours: 10 });
   // Manual cost = 10 * 65 * 12 = 7,800
@@ -26,6 +32,12 @@ test('calculateRoi handles boundary values and enforces min payback days', () =>
   assert.equal(lowResult.annualSavings, 6743);
   assert.equal(lowResult.hoursSavedMonthly, 9);
   assert.ok(lowResult.paybackDays > 0);
+
+  // Test zero values guard (prevent division by zero producing NaN/Infinity)
+  const zeroResult = calculateRoi({ volume: 0, manualHours: 0 });
+  assert.equal(zeroResult.annualSavings, 0);
+  assert.equal(zeroResult.hoursSavedMonthly, 0);
+  assert.equal(zeroResult.paybackDays, 0, 'Payback days must be 0 when annual savings is 0');
 
   // Test extremely high volume where payback days formula might yield < 12
   // Platform fee = 3588; if savings = 1,000,000, 3588/1000000*365 = 1.3 -> clamped to 12
@@ -39,6 +51,7 @@ test('Task 7: CSS contains ROI Calculator layout and custom slider styles', () =
   assert.ok(css.includes('.calculator-card'), 'CSS must define .calculator-card');
   assert.ok(css.includes('.calc-control'), 'CSS must define .calc-control');
   assert.ok(css.includes('.calc-control__header'), 'CSS must define .calc-control__header');
+  assert.ok(css.includes('flex-wrap: wrap'), 'calc-control__header must include flex-wrap: wrap for small screens');
   assert.ok(css.includes('.calc-control__label'), 'CSS must define .calc-control__label');
   assert.ok(css.includes('.calc-control__val'), 'CSS must define .calc-control__val');
   assert.ok(css.includes('.calc-slider'), 'CSS must define .calc-slider');
@@ -49,6 +62,7 @@ test('Task 7: CSS contains ROI Calculator layout and custom slider styles', () =
   assert.ok(css.includes('.calc-results__headline'), 'CSS must define .calc-results__headline');
   assert.ok(css.includes('.calc-metrics-row'), 'CSS must define .calc-metrics-row');
   assert.ok(css.includes('.calc-metric-box__val'), 'CSS must define .calc-metric-box__val');
+  assert.ok(css.includes('white-space: normal'), 'calc-results__action .btn must allow wrapping on small mobile screens');
   assert.ok(css.includes('@media (min-width: 900px)'), 'CSS must have desktop breakpoint');
 });
 
@@ -75,6 +89,8 @@ test('Task 7: index.html contains ROI Calculator section with accessible sliders
   assert.ok(html.includes('aria-label="Monthly Transaction Volume"') || html.includes('aria-labelledby'), 'Volume slider must have accessible name');
   assert.ok(html.includes('aria-valuemin="50000"'), 'Volume slider must declare aria-valuemin');
   assert.ok(html.includes('aria-valuemax="10000000"'), 'Volume slider must declare aria-valuemax');
+  assert.ok(html.includes('aria-valuetext="$1,500,000"'), 'Volume slider must have initial aria-valuetext');
+  assert.ok(html.includes('aria-valuetext="80 hrs/mo"'), 'Hours slider must have initial aria-valuetext');
 });
 
 test('Task 7: js/modules/calculator.js initCalculator binds sliders, updates state, and emits events', () => {
@@ -163,6 +179,8 @@ test('Task 7: js/modules/calculator.js initCalculator binds sliders, updates sta
   assert.equal(state.get('manualHours'), 100);
   assert.ok(mockVolumeSlider.style.properties['--slider-progress']);
   assert.ok(mockHoursSlider.style.properties['--slider-progress']);
+  assert.equal(mockVolumeSlider.attributes['aria-valuetext'], '$2,000,000');
+  assert.equal(mockHoursSlider.attributes['aria-valuetext'], '100 hrs/mo');
   assert.deepEqual(capturedEvent, { volume: 2000000, hours: 100, annualSavings: 70800 });
 
   // Simulate user changing hours slider to 120
@@ -175,6 +193,7 @@ test('Task 7: js/modules/calculator.js initCalculator binds sliders, updates sta
   assert.equal(mockHoursVal.textContent, '120 hrs/mo');
   assert.equal(mockSavings.textContent, '$84,060');
   assert.equal(mockHoursSaved.textContent, '102 hrs/mo');
+  assert.equal(mockHoursSlider.attributes['aria-valuetext'], '120 hrs/mo');
   assert.equal(state.get('manualHours'), 120);
   assert.deepEqual(capturedEvent, { volume: 2000000, hours: 120, annualSavings: 84060 });
 

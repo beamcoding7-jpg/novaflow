@@ -31,7 +31,7 @@ export function calculateRoi({ volume, manualHours }) {
   const hoursSavedMonthly = Math.round(manualHours * 0.85);
 
   const estimatedPlatformFee = 3588; // ค่าบริการแพ็กเกจ Scale ($299 * 12 เดือน)
-  const paybackDays = Math.max(12, Math.round((estimatedPlatformFee / annualSavings) * 365));
+  const paybackDays = annualSavings > 0 ? Math.max(12, Math.round((estimatedPlatformFee / annualSavings) * 365)) : 0;
 
   return {
     annualSavings,
@@ -41,10 +41,17 @@ export function calculateRoi({ volume, manualHours }) {
 }
 
 /**
- * อัปเดตการแสดงผลแถบสี Gradient ของ Custom Range Slider ตามค่าที่เลือก
- * @param {HTMLInputElement} slider
+ * Interface alias สำหรับคำนวณมูลค่าการประหยัดต้นทุนตาม Contract ของระบบ
  */
-function updateSliderVisual(slider) {
+export const calculateSavings = ({ volume, hours }) => calculateRoi({ volume, manualHours: hours });
+
+/**
+ * อัปเดตการแสดงผลแถบสี Gradient ของ Custom Range Slider ตามค่าที่เลือก
+ * พร้อมอัปเดต aria-valuenow และ aria-valuetext สำหรับ Screen Reader
+ * @param {HTMLInputElement} slider
+ * @param {string} [customText] - ข้อความอธิบายค่าสำหรับ Screen Reader (เช่น "$1,500,000" หรือ "80 hrs/mo")
+ */
+function updateSliderVisual(slider, customText) {
   if (!slider) return;
   const min = parseFloat(slider.min) || 0;
   const max = parseFloat(slider.max) || 100;
@@ -53,6 +60,8 @@ function updateSliderVisual(slider) {
   slider.style.setProperty('--slider-progress', `${percentage}%`);
   if (typeof slider.setAttribute === 'function') {
     slider.setAttribute('aria-valuenow', val.toString());
+    const text = customText || (slider.id === 'calc-slider-volume' ? formatCurrency(val, 'USD', 0) : `${val} hrs/mo`);
+    slider.setAttribute('aria-valuetext', text);
   }
 }
 
@@ -81,11 +90,14 @@ export function initCalculator() {
     const volume = parseFloat(volumeSlider.value);
     const hours = parseFloat(hoursSlider.value);
 
-    updateSliderVisual(volumeSlider);
-    updateSliderVisual(hoursSlider);
+    const volumeFormatted = formatCurrency(volume, 'USD', 0);
+    const hoursFormatted = `${hours} hrs/mo`;
 
-    if (volumeValEl) volumeValEl.textContent = formatCurrency(volume, 'USD', 0);
-    if (hoursValEl) hoursValEl.textContent = `${hours} hrs/mo`;
+    updateSliderVisual(volumeSlider, volumeFormatted);
+    updateSliderVisual(hoursSlider, hoursFormatted);
+
+    if (volumeValEl) volumeValEl.textContent = volumeFormatted;
+    if (hoursValEl) hoursValEl.textContent = hoursFormatted;
 
     const { annualSavings, hoursSavedMonthly, paybackDays } = calculateRoi({ volume, manualHours: hours });
 
