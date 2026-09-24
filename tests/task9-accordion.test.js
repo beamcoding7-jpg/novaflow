@@ -14,8 +14,12 @@ test('Task 9: CSS defines grid-template-rows smooth accordion animation and comp
   assert.ok(css.includes('.faq-item.open'), 'CSS must define .faq-item.open');
   assert.ok(css.includes('.faq-trigger'), 'CSS must define .faq-trigger');
   assert.ok(css.includes('.faq-chevron'), 'CSS must define .faq-chevron');
+  assert.ok(css.includes('.faq-item__heading'), 'CSS must define .faq-item__heading reset');
   assert.ok(css.includes('.faq-content-wrapper'), 'CSS must define .faq-content-wrapper');
+  assert.ok(css.includes('visibility: hidden'), 'CSS must hide collapsed wrapper visibility for screen readers');
+  assert.ok(css.includes('visibility: visible'), 'CSS must set visible on open wrapper');
   assert.ok(css.includes('.faq-content-inner'), 'CSS must define .faq-content-inner');
+  assert.ok(css.includes('min-height: 0'), 'CSS must define min-height: 0 on .faq-content-inner');
   assert.ok(css.includes('.faq-answer'), 'CSS must define .faq-answer');
 
   // Closing CTA Banner styles
@@ -41,6 +45,11 @@ test('Task 9: index.html contains FAQ accordion, Closing CTA banner, and 4-colum
   // FAQ Section & Header
   assert.ok(html.includes('id="faq"'), 'index.html must include section with id="faq"');
   assert.ok(html.includes('class="faq-list"'), 'index.html must include .faq-list');
+
+  // W3C APG Heading Wrapper
+  assert.ok(html.includes('class="faq-item__heading"'), 'FAQ triggers must be wrapped in h3.faq-item__heading');
+  const headingMatches = html.match(/<h3\s+class="faq-item__heading">/g) || [];
+  assert.equal(headingMatches.length, 5, 'All 5 FAQ triggers must be wrapped in h3 headings');
 
   // Verify at least 5 FAQ items with data-accordion-trigger
   const triggerMatches = html.match(/data-accordion-trigger/g) || [];
