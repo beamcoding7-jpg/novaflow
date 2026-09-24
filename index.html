@@ -747,7 +747,211 @@
         </div>
       </div>
     </section>
+
+    <!-- Accessible FAQ Accordion Section -->
+    <section class="section section--alt" id="faq" aria-labelledby="faq-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge--primary">Frequently Asked Questions</span>
+          <h2 class="section-header__title" id="faq-heading">Everything you need to know about NovaFlow</h2>
+          <p class="section-header__desc">
+            Explore detailed answers to common inquiries regarding enterprise security architecture, ERP integrations, multi-currency settlement rails, and SLA commitments.
+          </p>
+        </div>
+
+        <div class="faq-list">
+          <!-- FAQ Item 1: Security & Compliance -->
+          <div class="faq-item">
+            <button class="faq-trigger" id="faq-trigger-1" aria-expanded="false" aria-controls="faq-answer-1" data-accordion-trigger type="button">
+              <span>How does NovaFlow safeguard financial data and maintain regulatory compliance?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="faq-content-wrapper" id="faq-answer-1" role="region" aria-labelledby="faq-trigger-1">
+              <div class="faq-content-inner">
+                <div class="faq-answer">
+                  <p>NovaFlow enforces bank-grade security protocols across every layer of the infrastructure. All data in transit is encrypted using TLS 1.3, while data at rest is secured via AES-256 with automated hardware security module (HSM) key rotation. We maintain continuous compliance with SOC 2 Type II, ISO 27001, PCI-DSS Level 1, and GDPR. Our multi-tenant architecture incorporates isolated virtual private clouds (VPCs) with zero-trust network policies, granular role-based access control (RBAC), and immutable audit logging for all treasury operations.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 2: ERP Integrations -->
+          <div class="faq-item">
+            <button class="faq-trigger" id="faq-trigger-2" aria-expanded="false" aria-controls="faq-answer-2" data-accordion-trigger type="button">
+              <span>Which ERP and accounting systems integrate with NovaFlow?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="faq-content-wrapper" id="faq-answer-2" role="region" aria-labelledby="faq-trigger-2">
+              <div class="faq-content-inner">
+                <div class="faq-answer">
+                  <p>NovaFlow provides native, bi-directional sync integrations with major enterprise ERP platforms including Oracle NetSuite, SAP S/4HANA, Workday Financial Management, Microsoft Dynamics 365, and QuickBooks Online. Our real-time webhooks and RESTful Treasury API enable automated two-way ledger reconciliation, chart of accounts synchronization, and instant payment initiation directly from your existing financial workflow without custom middleware.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 3: Uptime SLA & High Availability -->
+          <div class="faq-item">
+            <button class="faq-trigger" id="faq-trigger-3" aria-expanded="false" aria-controls="faq-answer-3" data-accordion-trigger type="button">
+              <span>What uptime SLA and reliability guarantees does NovaFlow offer?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="faq-content-wrapper" id="faq-answer-3" role="region" aria-labelledby="faq-trigger-3">
+              <div class="faq-content-inner">
+                <div class="faq-answer">
+                  <p>We guarantee a 99.99% system availability SLA for all Scale and Enterprise customers, backed by contractual financial service credits. NovaFlow operates on multi-region, active-active cloud infrastructure distributed across Tier IV data centers with sub-second failover capabilities. Our payment routing engine continuously monitors global banking network health and automatically switches to secondary clearing rails in the event of upstream partner latency or downtime.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 4: Multi-Currency & Payout Rails -->
+          <div class="faq-item">
+            <button class="faq-trigger" id="faq-trigger-4" aria-expanded="false" aria-controls="faq-answer-4" data-accordion-trigger type="button">
+              <span>What multi-currency capabilities and global payout rails are supported?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="faq-content-wrapper" id="faq-answer-4" role="region" aria-labelledby="faq-trigger-4">
+              <div class="faq-content-inner">
+                <div class="faq-answer">
+                  <p>NovaFlow supports over 140 currencies across 180+ countries, with direct domestic clearing connectivity into SEPA (Eurozone), ACH and FedNow (US), Faster Payments (UK), and SWIFT GPI for rest-of-world wire disbursements. Built-in multi-currency treasury virtual accounts enable automated FX liquidity sweeps, real-time mid-market rate execution, and local-rail disbursements that eliminate intermediary correspondent banking fees.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 5: Migration & Onboarding Timeline -->
+          <div class="faq-item">
+            <button class="faq-trigger" id="faq-trigger-5" aria-expanded="false" aria-controls="faq-answer-5" data-accordion-trigger type="button">
+              <span>How long does implementation take, and what does the onboarding process entail?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="faq-content-wrapper" id="faq-answer-5" role="region" aria-labelledby="faq-trigger-5">
+              <div class="faq-content-inner">
+                <div class="faq-answer">
+                  <p>Most enterprise customers complete technical integration within 10 to 14 business days. You receive immediate access to a dedicated sandbox environment within 24 hours of account creation. For Scale and Enterprise plans, a dedicated Treasury Solutions Architect assists with ERP connector mapping, API authentication, custom approval rule configurations, and parallel reconciliation testing before transitioning to live production payment flows.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Conversion CTA Banner Section -->
+    <section class="section cta-banner-section" id="cta" aria-labelledby="cta-heading">
+      <div class="container">
+        <div class="cta-banner">
+          <div class="cta-banner__content">
+            <h2 class="cta-banner__title" id="cta-heading">Ready to modernise your global treasury?</h2>
+            <p class="cta-banner__desc">
+              Join fast-growing global scale-ups and Fortune 500 enterprises automating reconciliation, liquidity management, and instant payouts with NovaFlow.
+            </p>
+            <div class="cta-banner__actions">
+              <button class="btn btn--white" type="button" data-modal-open>Book a Live Demo</button>
+              <a href="#pricing" class="btn btn--ghost-white">Explore Pricing Plans</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- Comprehensive Enterprise Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <!-- Brand & Description Column -->
+        <div class="footer__brand-info">
+          <a href="#" class="navbar__logo" aria-label="NovaFlow Home">
+            <svg class="navbar__logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect width="32" height="32" rx="8" fill="currentColor" fill-opacity="0.12"/>
+              <path d="M8 22L14 10L18 18L24 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="24" cy="10" r="2.5" fill="currentColor"/>
+            </svg>
+            <span>NovaFlow</span>
+          </a>
+          <p class="footer__brand-desc">
+            Next-generation financial operations platform providing real-time multi-currency treasury, automated reconciliation, and intelligent liquidity routing for high-growth enterprises worldwide.
+          </p>
+          <div class="footer__status" role="status" aria-label="System status: All systems operational">
+            <span class="footer__status-dot" aria-hidden="true"></span>
+            <span>All Systems Operational</span>
+          </div>
+        </div>
+
+        <!-- Column 1: Product -->
+        <div>
+          <h3 class="footer__col-title">Product</h3>
+          <ul class="footer__links">
+            <li><a href="#features" class="footer__link">Global Liquidity Engine</a></li>
+            <li><a href="#features" class="footer__link">Automated Reconciliation</a></li>
+            <li><a href="#features" class="footer__link">Cross-Border Payout Rails</a></li>
+            <li><a href="#calculator" class="footer__link">ROI & Savings Simulator</a></li>
+            <li><a href="#pricing" class="footer__link">Pricing Plans</a></li>
+            <li><a href="#pricing" class="footer__link">API & Developer Docs</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 2: Solutions -->
+        <div>
+          <h3 class="footer__col-title">Solutions</h3>
+          <ul class="footer__links">
+            <li><a href="#solutions" class="footer__link">Enterprise Treasury</a></li>
+            <li><a href="#solutions" class="footer__link">FinTech & Neobanks</a></li>
+            <li><a href="#solutions" class="footer__link">Global Marketplaces</a></li>
+            <li><a href="#solutions" class="footer__link">Cross-Border E-Commerce</a></li>
+            <li><a href="#solutions" class="footer__link">B2B SaaS Billing</a></li>
+            <li><a href="#solutions" class="footer__link">ERP Integrations</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Company -->
+        <div>
+          <h3 class="footer__col-title">Company</h3>
+          <ul class="footer__links">
+            <li><a href="#company" class="footer__link">About NovaFlow</a></li>
+            <li><a href="#customers" class="footer__link">Customer Stories</a></li>
+            <li><a href="#careers" class="footer__link">Careers <span class="badge badge--success" style="font-size: 0.6875rem; margin-left: 0.25rem;">We're Hiring</span></a></li>
+            <li><a href="#press" class="footer__link">News & Press</a></li>
+            <li><a href="#security" class="footer__link">Security & Trust Center</a></li>
+            <li><a href="#contact" class="footer__link">Contact Sales</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Legal & Compliance -->
+        <div>
+          <h3 class="footer__col-title">Legal & Security</h3>
+          <ul class="footer__links">
+            <li><a href="#privacy" class="footer__link">Privacy Policy</a></li>
+            <li><a href="#terms" class="footer__link">Terms of Service</a></li>
+            <li><a href="#security" class="footer__link">SOC 2 & ISO Certifications</a></li>
+            <li><a href="#compliance" class="footer__link">PCI-DSS Level 1 Compliance</a></li>
+            <li><a href="#cookies" class="footer__link">Cookie Settings</a></li>
+            <li><a href="#sla" class="footer__link">Enterprise SLA Commitment</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer Bottom Bar -->
+      <div class="footer__bottom">
+        <p>&copy; 2026 NovaFlow Technologies Inc. All rights reserved.</p>
+        <div class="footer__legal-links">
+          <span>NovaFlow is a financial technology platform, not a bank. Banking services provided by licensed banking partner members.</span>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <div id="app"></div>
   <script type="module" src="js/main.js"></script>
