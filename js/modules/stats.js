@@ -3,9 +3,22 @@
  * Uses IntersectionObserver for high-performance viewport trigger
  * with ease-out cubic numeric animation.
  */
+let isInitialized = false;
+
+/**
+ * รีเซ็ตสถานะการเริ่มต้น (สำหรับ testing environment)
+ */
+export function _resetStatsInit() {
+  isInitialized = false;
+}
+
 export function initStatsCounter() {
+  if (isInitialized) return;
+
   const statElements = document.querySelectorAll('[data-counter-target]');
   if (!statElements.length) return;
+
+  isInitialized = true;
 
   // Fallback for environments lacking IntersectionObserver (e.g., headless Node tests)
   if (typeof IntersectionObserver === 'undefined') {
@@ -36,7 +49,7 @@ export function initStatsCounter() {
   statElements.forEach(el => observer.observe(el));
 
   function animateCounter(el) {
-    const target = parseFloat(el.getAttribute('data-counter-target'));
+    const target = parseFloat(el.getAttribute('data-counter-target')) || 0;
     const prefix = el.getAttribute('data-counter-prefix') || '';
     const suffix = el.getAttribute('data-counter-suffix') || '';
     const decimals = parseInt(el.getAttribute('data-counter-decimals') || '0', 10);
@@ -46,6 +59,9 @@ export function initStatsCounter() {
       el.textContent = `${prefix}${target.toFixed(decimals)}${suffix}`;
       return;
     }
+
+    // เริ่มต้นแอนิเมชันจาก 0 ขึ้นไปสู่เป้าหมาย (Progressive Enhancement fallback)
+    el.textContent = `${prefix}${(0).toFixed(decimals)}${suffix}`;
 
     const duration = 1600;
     const start = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
