@@ -68,7 +68,7 @@
           </svg>
         </button>
 
-        <a href="#demo" class="btn btn-primary" data-action="open-demo">Book a Demo</a>
+        <a href="#demo" class="btn btn-primary" data-action="open-demo-modal">Book a Demo</a>
 
         <button class="mobile-menu-btn" data-action="toggle-mobile-menu" aria-label="Open mobile menu" aria-expanded="false" type="button">
           <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -127,7 +127,7 @@
           </svg>
           <span>Switch Theme</span>
         </button>
-        <a href="#demo" class="btn btn-primary w-full" data-action="open-demo">Book a Demo</a>
+        <a href="#demo" class="btn btn-primary w-full" data-action="open-demo-modal">Book a Demo</a>
       </div>
     </div>
   </div>
@@ -154,7 +154,7 @@
 
         <!-- Call-to-Action Group & Security Microcopy -->
         <div class="hero__cta-group">
-          <a href="#demo" class="btn btn-primary" data-action="open-demo">Start Free Trial</a>
+          <a href="#demo" class="btn btn-primary" data-action="open-demo-modal">Start Free Trial</a>
           <a href="#features" class="btn btn-outline">Explore Interactive Demo</a>
         </div>
         <p class="hero__microcopy">
@@ -509,7 +509,7 @@
             </div>
 
             <div class="calc-results__action">
-              <a href="#demo" class="btn btn-primary w-full" data-action="open-demo">
+              <a href="#demo" class="btn btn-primary w-full" data-action="open-demo-modal">
                 Schedule Custom ROI Assessment
               </a>
             </div>
@@ -565,7 +565,7 @@
                 <div class="pricing-card__subtext" id="subtext-starter">Billed monthly</div>
               </div>
               <div class="pricing-card__action">
-                <a href="#demo" class="btn btn-secondary w-full" data-action="open-demo">Start 14-Day Free Trial</a>
+                <a href="#demo" class="btn btn-secondary w-full" data-action="open-demo-modal">Start 14-Day Free Trial</a>
               </div>
               <hr class="pricing-divider">
               <div class="pricing-features-title">Platform Capabilities</div>
@@ -608,7 +608,7 @@
                 <div class="pricing-card__subtext" id="subtext-scale">Billed monthly</div>
               </div>
               <div class="pricing-card__action">
-                <a href="#demo" class="btn btn-primary w-full" data-action="open-demo">Start 14-Day Free Trial</a>
+                <a href="#demo" class="btn btn-primary w-full" data-action="open-demo-modal">Start 14-Day Free Trial</a>
               </div>
               <hr class="pricing-divider">
               <div class="pricing-features-title">Everything in Starter, plus:</div>
@@ -650,7 +650,7 @@
                 <div class="pricing-card__subtext" id="subtext-enterprise">Billed annually or multi-year contract</div>
               </div>
               <div class="pricing-card__action">
-                <a href="#demo" class="btn btn-secondary w-full" data-action="open-demo">Talk to Enterprise Treasury</a>
+                <a href="#demo" class="btn btn-secondary w-full" data-action="open-demo-modal">Talk to Enterprise Treasury</a>
               </div>
               <hr class="pricing-divider">
               <div class="pricing-features-title">Enterprise Infrastructure:</div>
@@ -868,7 +868,7 @@
               Join fast-growing global scale-ups and Fortune 500 enterprises automating reconciliation, liquidity management, and instant payouts with NovaFlow.
             </p>
             <div class="cta-banner__actions">
-              <button class="btn btn--white" type="button" data-modal-open>Book a Live Demo</button>
+              <button class="btn btn--white" type="button" data-action="open-demo-modal" data-modal-open>Book a Live Demo</button>
               <a href="#pricing" class="btn btn--ghost-white">Explore Pricing Plans</a>
             </div>
           </div>
@@ -962,6 +962,64 @@
       </div>
     </div>
   </footer>
+
+  <!-- Demo Booking Modal Dialog (W3C APG Focus Trap) -->
+  <div id="demo-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+    <div class="modal-container">
+      <button class="modal-close-btn" type="button" data-action="close-modal" aria-label="Close dialog">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="modal-header">
+        <h2 id="modal-title" class="modal-title">Request Enterprise Demo</h2>
+        <p id="modal-desc" class="modal-desc">
+          Get instant access to our real-time treasury sandbox and a personalized walkthrough with our financial engineering team.
+        </p>
+      </div>
+
+      <form id="demo-form" class="modal-form">
+        <div class="form-group">
+          <label for="demo-name" class="form-label">Full Name</label>
+          <input type="text" id="demo-name" name="name" class="form-input" placeholder="e.g. Alex Morgan" required autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label for="demo-email" class="form-label">Work Email</label>
+          <input type="email" id="demo-email" name="email" class="form-input" placeholder="alex@company.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="demo-company" class="form-label">Company Name</label>
+          <input type="text" id="demo-company" name="company" class="form-input" placeholder="Acme Financial Technologies" required autocomplete="organization">
+        </div>
+
+        <div class="form-group">
+          <label for="demo-volume" class="form-label">Estimated Monthly Volume</label>
+          <select id="demo-volume" name="volume" class="form-select" required>
+            <option value="" disabled selected>Select volume range</option>
+            <option value="under-1m">&lt; $1,000,000 / month</option>
+            <option value="1m-10m">$1M – $10M / month</option>
+            <option value="10m-50m">$10M – $50M / month</option>
+            <option value="over-50m">$50M+ / month (Enterprise Tier)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" style="margin-top: var(--space-2);">
+          Request Sandbox Access
+        </button>
+
+        <p class="form-hint" style="text-align: center;">
+          By submitting, you agree to NovaFlow's Terms of Service and SOC 2 Type II data protection standards.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
   <div id="app"></div>
   <script type="module" src="js/main.js"></script>
