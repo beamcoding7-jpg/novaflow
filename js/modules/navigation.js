@@ -8,12 +8,15 @@ export function initNavigation() {
   const navLinks = document.querySelectorAll('.mobile-drawer__nav a');
 
   /**
-   * เปิด Mobile Drawer พร้อมล็อกการเลื่อนหน้าเว็บ
+   * เปิด Mobile Drawer พร้อมล็อกการเลื่อนหน้าเว็บ และอัปเดต aria-expanded
    */
   function openDrawer() {
     if (mobileDrawer) {
       mobileDrawer.classList.add('open');
       mobileDrawer.setAttribute('aria-hidden', 'false');
+      if (mobileToggle) {
+        mobileToggle.setAttribute('aria-expanded', 'true');
+      }
       if (document.body) {
         document.body.style.overflow = 'hidden';
       }
@@ -21,12 +24,19 @@ export function initNavigation() {
   }
 
   /**
-   * ปิด Mobile Drawer พร้อมปลดล็อกการเลื่อนหน้าเว็บ
+   * ปิด Mobile Drawer พร้อมปลดล็อกการเลื่อนหน้าเว็บ คืนค่า aria-expanded และคืน focus ให้ปุ่มเปิด
    */
   function closeDrawer() {
     if (mobileDrawer) {
+      const wasOpen = mobileDrawer.classList.contains('open');
       mobileDrawer.classList.remove('open');
       mobileDrawer.setAttribute('aria-hidden', 'true');
+      if (mobileToggle) {
+        mobileToggle.setAttribute('aria-expanded', 'false');
+        if (wasOpen && typeof mobileToggle.focus === 'function') {
+          mobileToggle.focus();
+        }
+      }
       if (document.body) {
         document.body.style.overflow = '';
       }

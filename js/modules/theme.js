@@ -40,7 +40,11 @@ export function initTheme() {
    */
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('novaflow-theme', theme);
+    try {
+      localStorage.setItem('novaflow-theme', theme);
+    } catch {
+      // ป้องกันข้อผิดพลาดกรณี private browsing mode หรือ storage quota เต็ม
+    }
     state.set('theme', theme);
     updateIcons(theme);
     eventBus.emit('theme-changed', { theme });
@@ -61,7 +65,13 @@ export function initTheme() {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     if (mediaQuery && typeof mediaQuery.addEventListener === 'function') {
       mediaQuery.addEventListener('change', (e) => {
-        if (!localStorage.getItem('novaflow-theme')) {
+        let hasSavedTheme = false;
+        try {
+          hasSavedTheme = Boolean(localStorage.getItem('novaflow-theme'));
+        } catch {
+          hasSavedTheme = false;
+        }
+        if (!hasSavedTheme) {
           applyTheme(e.matches ? 'dark' : 'light');
         }
       });
