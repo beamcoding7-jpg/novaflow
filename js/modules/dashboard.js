@@ -34,11 +34,24 @@ export const dashboardDatasets = {
   }
 };
 
+let isInitialized = false;
+
+/**
+ * รีเซ็ตสถานะการเริ่มต้น (สำหรับ testing environment)
+ */
+export function _resetDashboardInit() {
+  isInitialized = false;
+}
+
 /**
  * กำหนดค่าและจัดการ Live Dashboard Preview Card
- * รองรับการสลับช่วงเวลา 7D / 30D / 1Y, อัปเดตตัวเลขการเงิน และวาดกราฟ SVG ใหม่
+ * รองรับการสลับช่วงเวลา 7D / 30D / 1Y, การนำทางด้วยแป้นพิมพ์ Arrow Keys (WAI-ARIA Tablist),
+ * อัปเดตตัวเลขการเงิน และวาดกราฟ SVG ใหม่
  */
 export function initDashboard() {
+  if (isInitialized) return;
+  isInitialized = true;
+
   const balanceEl = document.getElementById('dashboard-balance');
   const growthBadgeEl = document.getElementById('dashboard-growth');
   const chartWrapper = document.getElementById('dashboard-chart');
@@ -62,6 +75,7 @@ export function initDashboard() {
       btn.classList.toggle('active', isActive);
       if (typeof btn.setAttribute === 'function') {
         btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        btn.setAttribute('tabindex', isActive ? '0' : '-1');
       }
     });
 
@@ -79,10 +93,38 @@ export function initDashboard() {
     eventBus.emit('timeframe-changed', { timeframe, data });
   }
 
-  timeframeBtns.forEach(btn => {
+  const btnsArray = Array.from(timeframeBtns);
+  btnsArray.forEach((btn, index) => {
     btn.addEventListener('click', () => {
       const tf = btn.getAttribute('data-timeframe');
       render(tf);
+    });
+
+    // รองรับ WAI-ARIA APG Tabs Pattern: Arrow Left / Right, Home, End
+    btn.addEventListener('keydown', (e) => {
+      let targetIndex = -1;
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        targetIndex = (index + 1) % btnsArray.length;
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        targetIndex = (index - 1 + btnsArray.length) % btnsArray.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        targetIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        targetIndex = btnsArray.length - 1;
+      }
+
+      if (targetIndex !== -1) {
+        const targetBtn = btnsArray[targetIndex];
+        if (typeof targetBtn.focus === 'function') {
+          targetBtn.focus();
+        }
+        const tf = targetBtn.getAttribute('data-timeframe');
+        render(tf);
+      }
     });
   });
 

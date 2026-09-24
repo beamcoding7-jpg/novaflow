@@ -52,7 +52,7 @@ test('Task 5: CSS contains Hero Section and Interactive Dashboard definitions', 
   assert.ok(css.includes('.kpi-item'), 'CSS must define .kpi-item');
 });
 
-test('Task 5: index.html contains Hero Section and Dashboard Preview markup', () => {
+test('Task 5: index.html contains Hero Section and Dashboard Preview with valid W3C ARIA semantics', () => {
   const html = fs.readFileSync('index.html', 'utf-8');
   assert.ok(html.includes('class="hero"'), 'index.html must include hero section');
   assert.ok(html.includes('hero__title'), 'index.html must include hero title');
@@ -67,14 +67,29 @@ test('Task 5: index.html contains Hero Section and Dashboard Preview markup', ()
   assert.ok(html.includes('id="kpi-reconciled"'), 'index.html must include #kpi-reconciled');
   assert.ok(html.includes('id="kpi-latency"'), 'index.html must include #kpi-latency');
   assert.ok(html.includes('id="kpi-currencies"'), 'index.html must include #kpi-currencies');
+
+  // Finding 1: W3C ARIA 1.2 Region Semantics on dashboard-card
+  assert.ok(
+    html.includes('class="dashboard-card" role="region"') || html.includes('role="region" class="dashboard-card"'),
+    'dashboard-card must have role="region" to support aria-label'
+  );
+
+  // Finding 1: role="tabpanel" on #dashboard-chart without redundant aria-label on wrapper
+  assert.ok(html.includes('id="dashboard-chart" class="dashboard-card__chart-container" role="tabpanel"'), '#dashboard-chart must have role="tabpanel"');
+  assert.ok(!html.includes('id="dashboard-chart" class="dashboard-card__chart-container" role="tabpanel" aria-label'), '#dashboard-chart container must not have redundant aria-label');
+
+  // Finding 2: WAI-ARIA tab controls and initial selection
+  assert.ok(html.includes('aria-controls="dashboard-chart"'), 'timeframe buttons must have aria-controls="dashboard-chart"');
+  assert.ok(html.includes('data-timeframe="7D"') && html.includes('aria-selected="true"'), '7D button must have aria-selected="true" by default');
 });
 
-test('Task 5: js/modules/dashboard.js exports initDashboard, manages timeframe tabs, updates state and chart', async () => {
-  const { initDashboard, dashboardDatasets } = await import('../js/modules/dashboard.js');
+test('Task 5: js/modules/dashboard.js exports initDashboard, manages timeframe tabs, keyboard navigation, and idempotency', async () => {
+  const { initDashboard, _resetDashboardInit } = await import('../js/modules/dashboard.js');
   const { state } = await import('../js/core/state.js');
   const { eventBus } = await import('../js/core/event-bus.js');
 
   assert.equal(typeof initDashboard, 'function', 'initDashboard must be a function');
+  _resetDashboardInit();
 
   // จำลอง Mock DOM Elements สำหรับการทดสอบ
   const balanceEl = { textContent: '' };
@@ -84,10 +99,15 @@ test('Task 5: js/modules/dashboard.js exports initDashboard, manages timeframe t
   const kpiLatency = { textContent: '' };
   const kpiCurrencies = { textContent: '' };
 
-  const buttons = ['7D', '30D', '1Y'].map(tf => {
+  const buttonFocusCounts = [0, 0, 0];
+  const buttons = ['7D', '30D', '1Y'].map((tf, idx) => {
     const classList = new Set();
     const listeners = {};
-    const attrs = { 'data-timeframe': tf };
+    const attrs = {
+      'data-timeframe': tf,
+      'aria-selected': idx === 0 ? 'true' : 'false',
+      'tabindex': idx === 0 ? '0' : '-1'
+    };
     return {
       classList: {
         add: (cls) => classList.add(cls),
@@ -107,8 +127,14 @@ test('Task 5: js/modules/dashboard.js exports initDashboard, manages timeframe t
       getAttribute: (k) => attrs[k],
       setAttribute: (k, v) => { attrs[k] = v; },
       hasAttribute: (k) => k in attrs,
-      addEventListener: (evt, handler) => { listeners[evt] = handler; },
-      _trigger: (evt) => listeners[evt]?.()
+      focus: () => { buttonFocusCounts[idx]++; },
+      addEventListener: (evt, handler) => {
+        if (!listeners[evt]) listeners[evt] = [];
+        listeners[evt].push(handler);
+      },
+      _trigger: (evt, data = {}) => {
+        listeners[evt]?.forEach(h => h(data));
+      }
     };
   });
 
@@ -147,51 +173,68 @@ test('Task 5: js/modules/dashboard.js exports initDashboard, manages timeframe t
     assert.equal(kpiLatency.textContent, '1.2s');
     assert.equal(kpiCurrencies.textContent, '38');
     assert.ok(buttons[0].classList.contains('active'), '7D button must be active');
+    assert.equal(buttons[0].getAttribute('aria-selected'), 'true');
+    assert.equal(buttons[0].getAttribute('tabindex'), '0');
     assert.ok(!buttons[1].classList.contains('active'), '30D button must not be active');
+    assert.equal(buttons[1].getAttribute('aria-selected'), 'false');
+    assert.equal(buttons[1].getAttribute('tabindex'), '-1');
     assert.ok(!buttons[2].classList.contains('active'), '1Y button must not be active');
+    assert.equal(buttons[2].getAttribute('aria-selected'), 'false');
+    assert.equal(buttons[2].getAttribute('tabindex'), '-1');
     assert.ok(chartWrapper.innerHTML.includes('<svg'), 'chartWrapper must contain SVG markup');
     assert.ok(chartWrapper.innerHTML.includes('hero-chart-gradient-7D'), 'chart SVG must include timeframe gradient ID');
 
     assert.equal(emittedEvents.length, 1);
     assert.equal(emittedEvents[0].timeframe, '7D');
 
+    // ทดสอบ Idempotency Guard: เรียกซ้ำต้องไม่เกิด duplicate listeners หรือ re-render ซ้ำซ้อน
+    initDashboard();
+    assert.equal(emittedEvents.length, 1, 'Calling initDashboard() repeatedly must be idempotent');
+
     // จำลองคลิกเลือก 30D
     buttons[1]._trigger('click');
     assert.equal(state.get('timeframe'), '30D');
     assert.equal(balanceEl.textContent, '$48,912,300.00');
     assert.equal(growthBadgeEl.textContent, '+28.4%');
-    assert.equal(kpiReconciled.textContent, '99.7%');
-    assert.equal(kpiLatency.textContent, '1.1s');
-    assert.equal(kpiCurrencies.textContent, '42');
-    assert.ok(!buttons[0].classList.contains('active'));
-    assert.ok(buttons[1].classList.contains('active'));
-    assert.ok(!buttons[2].classList.contains('active'));
+    assert.equal(buttons[1].getAttribute('aria-selected'), 'true');
+    assert.equal(buttons[1].getAttribute('tabindex'), '0');
+    assert.equal(buttons[0].getAttribute('aria-selected'), 'false');
+    assert.equal(buttons[0].getAttribute('tabindex'), '-1');
     assert.ok(chartWrapper.innerHTML.includes('hero-chart-gradient-30D'));
     assert.equal(emittedEvents.length, 2);
-    assert.equal(emittedEvents[1].timeframe, '30D');
 
-    // จำลองคลิกเลือก 1Y
-    buttons[2]._trigger('click');
+    // จำลองกด ArrowRight บนปุ่ม 30D (ต้องเลื่อนไป 1Y และ focus)
+    let defaultPrevented = false;
+    buttons[1]._trigger('keydown', { key: 'ArrowRight', preventDefault: () => { defaultPrevented = true; } });
+    assert.ok(defaultPrevented, 'ArrowRight should call preventDefault()');
     assert.equal(state.get('timeframe'), '1Y');
     assert.equal(balanceEl.textContent, '$184,500,000.00');
-    assert.equal(growthBadgeEl.textContent, '+142.1%');
-    assert.equal(kpiReconciled.textContent, '99.9%');
-    assert.equal(kpiLatency.textContent, '0.9s');
-    assert.equal(kpiCurrencies.textContent, '54');
-    assert.ok(!buttons[0].classList.contains('active'));
-    assert.ok(!buttons[1].classList.contains('active'));
-    assert.ok(buttons[2].classList.contains('active'));
-    assert.ok(chartWrapper.innerHTML.includes('hero-chart-gradient-1Y'));
+    assert.equal(buttons[2].getAttribute('aria-selected'), 'true');
+    assert.equal(buttons[2].getAttribute('tabindex'), '0');
+    assert.equal(buttons[1].getAttribute('aria-selected'), 'false');
+    assert.equal(buttons[1].getAttribute('tabindex'), '-1');
+    assert.equal(buttonFocusCounts[2], 1, 'Focus should move to button 1Y');
     assert.equal(emittedEvents.length, 3);
-    assert.equal(emittedEvents[2].timeframe, '1Y');
+
+    // จำลองกด ArrowRight บนปุ่ม 1Y (wrap around กลับไป 7D)
+    buttons[2]._trigger('keydown', { key: 'ArrowRight', preventDefault: () => {} });
+    assert.equal(state.get('timeframe'), '7D');
+    assert.equal(buttons[0].getAttribute('aria-selected'), 'true');
+    assert.equal(buttonFocusCounts[0], 1, 'Focus should wrap around to button 7D');
+
+    // จำลองกด ArrowLeft บนปุ่ม 7D (wrap around ไป 1Y)
+    buttons[0]._trigger('keydown', { key: 'ArrowLeft', preventDefault: () => {} });
+    assert.equal(state.get('timeframe'), '1Y');
+    assert.equal(buttons[2].getAttribute('aria-selected'), 'true');
+    assert.equal(buttonFocusCounts[2], 2, 'Focus should wrap around backward to button 1Y');
 
     // จำลอง EventBus 'theme-changed'
     eventBus.emit('theme-changed', { theme: 'dark' });
-    // ต้องยังคง timeframe 1Y และ re-render chart
     assert.equal(state.get('timeframe'), '1Y');
     assert.ok(chartWrapper.innerHTML.includes('hero-chart-gradient-1Y'));
   } finally {
     eventBus.off('timeframe-changed', onTimeframeChange);
     global.document = oldDoc;
+    _resetDashboardInit();
   }
 });

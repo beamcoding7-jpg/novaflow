@@ -162,7 +162,7 @@
         </p>
 
         <!-- Interactive Live Dashboard Preview Card -->
-        <div class="dashboard-card" aria-label="NovaFlow Live Treasury Dashboard Preview">
+        <div class="dashboard-card" role="region" aria-label="NovaFlow Live Treasury Dashboard Preview">
           <div class="dashboard-card__header">
             <div>
               <div class="dashboard-card__balance-label">Global Treasury Balance</div>
@@ -174,14 +174,14 @@
 
             <!-- Timeframe Selector Tabs -->
             <div class="timeframe-selector" role="tablist" aria-label="Chart Timeframe">
-              <button class="timeframe-btn active" data-timeframe="7D" type="button" role="tab" aria-selected="true">7D</button>
-              <button class="timeframe-btn" data-timeframe="30D" type="button" role="tab" aria-selected="false">30D</button>
-              <button class="timeframe-btn" data-timeframe="1Y" type="button" role="tab" aria-selected="false">1Y</button>
+              <button class="timeframe-btn active" data-timeframe="7D" type="button" role="tab" aria-selected="true" aria-controls="dashboard-chart" tabindex="0">7D</button>
+              <button class="timeframe-btn" data-timeframe="30D" type="button" role="tab" aria-selected="false" aria-controls="dashboard-chart" tabindex="-1">30D</button>
+              <button class="timeframe-btn" data-timeframe="1Y" type="button" role="tab" aria-selected="false" aria-controls="dashboard-chart" tabindex="-1">1Y</button>
             </div>
           </div>
 
           <!-- Dynamic SVG Area Chart Container -->
-          <div id="dashboard-chart" class="dashboard-card__chart-container" aria-label="Interactive Balance Trend Chart"></div>
+          <div id="dashboard-chart" class="dashboard-card__chart-container" role="tabpanel"></div>
 
           <!-- Quick Metrics KPI Grid -->
           <div class="dashboard-kpis">
