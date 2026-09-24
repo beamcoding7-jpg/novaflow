@@ -132,6 +132,77 @@
     </div>
   </div>
 
+  <main id="main-content">
+    <!-- Hero Section & Live Interactive Dashboard Preview -->
+    <section class="hero" id="hero">
+      <div class="container">
+        <!-- Live Announcement Badge -->
+        <div class="hero__badge-wrapper">
+          <div class="hero__badge">
+            <span aria-hidden="true">✨</span>
+            <span>NovaFlow 3.0 is live • Real-Time Global Treasury Engine</span>
+          </div>
+        </div>
+
+        <!-- Headline & Subheadline -->
+        <h1 class="hero__title">
+          Financial Operations, Engineered for Hypergrowth
+        </h1>
+        <p class="hero__subtitle">
+          Automate reconciliation, execute instant cross-border payouts, and monitor global multi-currency liquidity in real-time. All from a single unified API and intelligent treasury platform.
+        </p>
+
+        <!-- Call-to-Action Group & Security Microcopy -->
+        <div class="hero__cta-group">
+          <a href="#demo" class="btn btn-primary" data-action="open-demo">Start Free Trial</a>
+          <a href="#features" class="btn btn-outline">Explore Interactive Demo</a>
+        </div>
+        <p class="hero__microcopy">
+          No credit card required • SOC2 Type II Certified • 14-day free trial
+        </p>
+
+        <!-- Interactive Live Dashboard Preview Card -->
+        <div class="dashboard-card" aria-label="NovaFlow Live Treasury Dashboard Preview">
+          <div class="dashboard-card__header">
+            <div>
+              <div class="dashboard-card__balance-label">Global Treasury Balance</div>
+              <div class="dashboard-card__balance-row">
+                <span id="dashboard-balance" class="dashboard-card__balance-val tabular-nums">$12,458,920.40</span>
+                <span id="dashboard-growth" class="badge badge-success tabular-nums">+14.8%</span>
+              </div>
+            </div>
+
+            <!-- Timeframe Selector Tabs -->
+            <div class="timeframe-selector" role="tablist" aria-label="Chart Timeframe">
+              <button class="timeframe-btn active" data-timeframe="7D" type="button" role="tab" aria-selected="true">7D</button>
+              <button class="timeframe-btn" data-timeframe="30D" type="button" role="tab" aria-selected="false">30D</button>
+              <button class="timeframe-btn" data-timeframe="1Y" type="button" role="tab" aria-selected="false">1Y</button>
+            </div>
+          </div>
+
+          <!-- Dynamic SVG Area Chart Container -->
+          <div id="dashboard-chart" class="dashboard-card__chart-container" aria-label="Interactive Balance Trend Chart"></div>
+
+          <!-- Quick Metrics KPI Grid -->
+          <div class="dashboard-kpis">
+            <div class="kpi-item">
+              <span class="kpi-item__label">Auto-Reconciliation</span>
+              <span id="kpi-reconciled" class="kpi-item__val tabular-nums">99.4%</span>
+            </div>
+            <div class="kpi-item">
+              <span class="kpi-item__label">Payout Latency</span>
+              <span id="kpi-latency" class="kpi-item__val tabular-nums">1.2s</span>
+            </div>
+            <div class="kpi-item">
+              <span class="kpi-item__label">Active Currencies</span>
+              <span id="kpi-currencies" class="kpi-item__val tabular-nums">38</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
   <div id="app"></div>
   <script type="module" src="js/main.js"></script>
 </body>
