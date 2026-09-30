@@ -1,0 +1,10 @@
+# Dependencies & Scratch
+node_modules/
+.superpowers/
+.DS_Store
+*.log
+
+# Editor & OS artifacts
+.vscode/
+.idea/
+Thumbs.db
